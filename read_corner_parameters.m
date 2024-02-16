@@ -17,7 +17,7 @@ params = {};
 paramtypes = {'%s','%f','%d','%d','%d'};
 paramnames = {'filename','S','N','D','M'};
 
-for i=1:length(paramtypes);
+for i=1:length(paramtypes)
     line = fgets(fp);
 
     %ignore comment lines
@@ -50,15 +50,67 @@ gKernel = exp(-x.^2 / (2 * S^2));
 gKernel = gKernel / sum(gKernel); 
 
 % conv along rows then cols
-smoothedRow = conv2(gKernel, 1, imageData, 'full');
-smoothedImage = conv2(1, gKernel', smoothedRow, 'full');
+smoothedRow = conv2(gKernel, 1, imageData, 'same');
+smoothedImage = conv2(1, gKernel', smoothedRow, 'same');
 
 
 % ~~~QUESTION 4~~~
 
+% gradient() in Matlab uses central difference 
 [Gx, Gy] = gradient(smoothedImage);
+
+
+% ~~~QUESTION 5~~~
+
+% ~~~~~~part a~~~~
+GxGx = Gx .* Gx;
+GxGy = Gx .* Gy;
+GyGy = Gy .* Gy;
+
+% ~~~~~~part b~~~~
+box_filter = ones(N, N);
+
+Sx2 = conv2(GxGx, box_filter, 'same');
+Sxy = conv2(GxGy, box_filter, 'same');
+Sy2 = conv2(GyGy, box_filter, 'same');
+
+% ~~~~~~part c~~~~
+[rows, cols] = size(imageData);
+H = zeros(rows, cols, 2, 2);
+for x = 1 : rows
+    for y = 1 : cols
+        H(x, y, 1, 1) = Sx2(x, y);
+        H(x, y, 1, 2) = Sxy(x, y);
+        H(x, y, 2, 1) = Sxy(x, y);
+        H(x, y, 2, 2) = Sy2(x, y);
+    end
+end
+
+% ~~~~~~part d~~~~
+R = zeros(rows, cols);
+for x = 1:rows
+    for y = 1:cols
+
+        % extract H at each pixel
+        H11 = H(x, y, 1, 1);
+        H12 = H(x, y, 1, 2);
+        H21 = H(x, y, 2, 1);
+        H22 = H(x, y, 2, 2);
+
+        % calculate determinant and trace
+        det = (H11 * H22) - (H12 * H21);
+        trace = H11 + H22;
+
+        % compute R
+        k = 0.05;
+        R(x, y) = det - k * trace^2;
+    end
+end
+
 
 %imshow(imageData);
 imshow(smoothedImage);
+%imshow(R);
+disp(GxGx)
 
 return

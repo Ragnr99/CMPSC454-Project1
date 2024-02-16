@@ -6,6 +6,8 @@
 %   [filename,S,N,D,M] = read_corner_parameters('cornerparams.dat');
 %
 
+% ~~~QUESTION 1~~~
+
 function [filename,S,N,D,M] = read_corner_parameters(paramfilename)
 
 fp = fopen('cornerparams.dat','r');
@@ -17,7 +19,9 @@ paramnames = {'filename','S','N','D','M'};
 
 for i=1:length(paramtypes);
     line = fgets(fp);
-    while(line(1)=='%')    %ignore comment lines
+
+    %ignore comment lines
+    while(line(1)=='%')    
         line = fgets(fp);
     end
     command = sprintf('%s = sscanf(line,''%s'');',paramnames{i},paramtypes{i});
@@ -26,17 +30,33 @@ end
 
 fclose(fp);
 
-% Read the image file
+
+% ~~~QUESTION 2~~~
+
 imageData = imread(filename);
+imageData = im2double(rgb2gray(imageData));
 
-% Convert to double float grayscale
-imageData = im2double(rgb2gray(rgbImage));
 
-% Display all the saved values
-fprintf('filename: %s\n', filename);
-fprintf('S: %f\n', S);
-fprintf('N: %d\n', N);
-fprintf('D: %d\n', D);
-fprintf('M: %d\n', M);
+% ~~~QUESTION 3~~~
+
+% get kernel size
+kernelSize = 2 * ceil(3 * S) + 1;
+
+% create kernel
+x = -floor(kernelSize/2):floor(kernelSize/2);
+gKernel = exp(-x.^2 / (2 * S^2));
+
+% normalize before convolving
+gKernel = gKernel / sum(gKernel); 
+
+% conv along rows then cols cols
+smoothedRow = conv2(gKernel, 1, imageData, 'full');
+smoothedImage = conv2(1, gKernel', smoothedRow, 'full');
+
+
+% ~~~QUESTION 4~~~
+
+%imshow(imageData);
+imshow(smoothedImage);
 
 return

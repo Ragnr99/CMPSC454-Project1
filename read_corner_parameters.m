@@ -49,12 +49,14 @@ gKernel = exp(-x.^2 / (2 * S^2));
 % normalize before convolving
 gKernel = gKernel / sum(gKernel); 
 
-% conv along rows then cols cols
+% conv along rows then cols
 smoothedRow = conv2(gKernel, 1, imageData, 'full');
 smoothedImage = conv2(1, gKernel', smoothedRow, 'full');
 
 
 % ~~~QUESTION 4~~~
+
+[Gx, Gy] = gradient(smoothedImage);
 
 %imshow(imageData);
 imshow(smoothedImage);

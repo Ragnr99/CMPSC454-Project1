@@ -9,7 +9,11 @@
 % ~~~QUESTION 1~~~
 
 
+
 function [filename,S,N,D,M] = read_corner_parameters(paramfilename)
+clc;
+clear;
+
 
 fp = fopen('cornerparams.dat','r');
 
@@ -131,10 +135,15 @@ end
 
 % ~~~~~QUESTION 7~~~~
 % Define the filename for the output
-outputFilename = 'corners_output.txt';
+outputFilename = 'corner_features.txt';
 
 % Open the file for writing
 fileID = fopen(outputFilename, 'w');
+
+% Check if the file was successfully opened
+if fileID == -1
+    error('Cannot open file for writing.');
+end
 
 % Write the number of corners found to the first line
 fprintf(fileID, '%d\n', M);
@@ -146,5 +155,40 @@ end
 
 % Close the file
 fclose(fileID);
+
+% Display a confirmation message
+disp(['Corner features successfully written to ', outputFilename]);
+
+% Display Original Image
+figure; 
+imshow(imageData); 
+title('Original Image');
+
+% Display Harris R Image
+figure; 
+imshow(R, []);  % The [] scales the display based on the min/max values of R
+title('Harris R Image');
+
+% Display Top N Corners on the Original Image
+figure; 
+imshow(imageData); 
+hold on;
+for i = 1:size(goodCorners, 1)
+    % Draw a red box around each corner
+    rectangle('Position', [goodCorners(i,3)-3, goodCorners(i,2)-3, 7, 7], 'EdgeColor', 'r', 'LineWidth', 2);
+end
+title('Top N Corners Found');
+
+% Display Gradient Gx Image
+figure; 
+imshow(Gx, []); 
+title('Gradient Gx Image');
+
+% Display Gradient Gy Image
+% figure; 
+% imshow(Gy, []); 
+% title('Gradient Gy Image');
+
+
 
 return

@@ -5,10 +5,10 @@
 %
 %First parameter, a string containing the filename to read.  This should be
 %the full pathname to the file. 
-%./checkerboard.jpg
+./checkerboard.jpg
 %./stickfiguredance.jpg
 %./psulion.jpg
-./psutd.jpg
+%./psutd.jpg
 %
 %Second parameter, floating point number containing standard deviation of
 %the Gaussian smoothing kernel to apply to the image
@@ -21,7 +21,7 @@
 %
 %Fourth parameter, integer specifying  the radius of local neighborhood around
 %each extracted corner within which to supporess any further corner responses.
-3
+10
 %
 %Fifth parameter, integer specifying number of corners we want to detect.
 100
